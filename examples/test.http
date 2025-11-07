@@ -1,0 +1,29 @@
+### 
+POST http://localhost:8080/api/query
+Content-Type: application/json
+
+{
+    "dataSources": [
+      {
+        "name": "users",
+        "type": "http",
+        "url": "https://jsonplaceholder.typicode.com/users/${userId}",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${token}"
+        }
+      },
+      {
+        "name": "config",
+        "type": "excel",
+        "path": "/path/to/config.xlsx",
+        "sheet": "Sheet1",
+        "hasHeader": true
+      }
+    ],
+    "sql": "SELECT u.*, c.value FROM users u LEFT JOIN config c ON u.id = c.user_id",
+    "params": {
+      "userId": "1",
+      "token": "your-api-token"
+    }
+  }

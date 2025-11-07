@@ -1,0 +1,31 @@
+[
+  {
+    "id": 1,
+    "name": "笔记本电脑",
+    "price": 5999.00,
+    "category": "电子产品",
+    "stock": 50
+  },
+  {
+    "id": 2,
+    "name": "无线鼠标",
+    "price": 89.00,
+    "category": "电子产品",
+    "stock": 200
+  },
+  {
+    "id": 3,
+    "name": "机械键盘",
+    "price": 299.00,
+    "category": "电子产品",
+    "stock": 150
+  },
+  {
+    "id": 4,
+    "name": "显示器",
+    "price": 1299.00,
+    "category": "电子产品",
+    "stock": 80
+  }
+]
+

@@ -1,0 +1,26 @@
+{
+  "dataSources": [
+    {
+      "name": "user",
+      "type": "http",
+      "url": "https://jsonplaceholder.typicode.com/users/${userId}",
+      "method": "GET",
+      "headers": {
+        "Authorization": "Bearer ${token}",
+        "Content-Type": "application/json"
+      }
+    },
+    {
+      "name": "posts",
+      "type": "http",
+      "url": "https://jsonplaceholder.typicode.com/posts?userId=${userId}",
+      "method": "GET"
+    }
+  ],
+  "sql": "SELECT u.id, u.name, u.email, COUNT(p.id) as post_count FROM user u LEFT JOIN posts p ON u.id = p.userId GROUP BY u.id, u.name, u.email",
+  "params": {
+    "userId": "1",
+    "token": "dummy-token-for-testing"
+  }
+}
+

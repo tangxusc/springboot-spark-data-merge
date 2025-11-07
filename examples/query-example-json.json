@@ -1,0 +1,13 @@
+{
+  "dataSources": [
+    {
+      "name": "products",
+      "type": "json",
+      "path": "examples/sample-products.json",
+      "isArray": true
+    }
+  ],
+  "sql": "SELECT name, price, stock, (price * stock) as total_value FROM products WHERE price > 100 ORDER BY price DESC",
+  "params": {}
+}
+

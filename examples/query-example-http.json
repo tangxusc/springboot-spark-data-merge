@@ -1,0 +1,16 @@
+{
+  "dataSources": [
+    {
+      "name": "users",
+      "type": "http",
+      "url": "https://jsonplaceholder.typicode.com/users",
+      "method": "GET",
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    }
+  ],
+  "sql": "SELECT id, name, email, phone FROM users WHERE id <= 5",
+  "params": {}
+}
+

@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: data-merge-engine
+
+# Spark 配置
+spark:
+  app-name: data-merge-engine
+  master: local[*]
+  driver-memory: 2g
+  executor-memory: 2g
+  ui-enabled: false
+
+# Feign 配置
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 10000
+        loggerLevel: basic
+  httpclient:
+    enabled: true
+
+# 日志配置
+logging:
+  level:
+    com.datamerge: INFO
+    org.apache.spark: WARN
+    org.springframework.cloud.openfeign: DEBUG
+
