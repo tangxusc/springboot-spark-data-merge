@@ -1,12 +1,12 @@
 # 数据聚合引擎 (Data Merge Engine)
 
-基于 Spring Boot 2.7 和嵌入式 Spark SQL 构建的数据聚合引擎，支持聚合 HTTP API、JSON 文件、Excel 文件的数据，并通过 REST 接口返回聚合结果。
+基于 Spring Boot 2.7 和嵌入式 Spark SQL 构建的数据聚合引擎，支持聚合 HTTP API、JSON 文件、Excel 文件、MySQL 数据库等多种数据源，并通过 REST 接口返回聚合结果。
 
 ## 功能特性
 
-- **多数据源支持**：HTTP API、JSON 文件、Excel 文件
+- **多数据源支持**：HTTP API、JSON 文件、Excel 文件、MySQL 数据库
 - **Spark SQL 聚合**：使用嵌入式 Spark SQL 引擎执行复杂的数据聚合
-- **参数传递**：支持从 REST API 传入参数到数据源（URL、Headers）
+- **参数传递**：支持从 REST API 传入参数到数据源（URL、Headers、数据库连接信息等）
 - **Token 认证**：支持 HTTP API 数据源的 Token 认证
 - **REST API**：提供简洁的 REST 接口进行数据查询
 
@@ -17,6 +17,7 @@
 - Spring Cloud OpenFeign
 - Apache POI (Excel 解析)
 - Jackson (JSON 处理)
+- MySQL Connector/J (MySQL 数据库连接)
 - Maven
 
 ## 快速开始
@@ -98,6 +99,84 @@ curl -X POST http://localhost:8080/api/query \
     ],
     "sql": "SELECT * FROM products WHERE price > 100",
     "params": {}
+  }'
+```
+
+#### 请求示例：聚合 MySQL 数据库数据
+
+```bash
+curl -X POST http://localhost:8080/api/query \
+  -H "Content-Type: application/json" \
+  -d '{
+    "dataSources": [
+      {
+        "name": "users",
+        "type": "mysql",
+        "url": "jdbc:mysql://localhost:3306/mydb",
+        "username": "root",
+        "password": "password",
+        "database": "mydb",
+        "table": "users"
+      }
+    ],
+    "sql": "SELECT * FROM users WHERE age > 18",
+    "params": {}
+  }'
+```
+
+#### 请求示例：使用自定义 SQL 查询 MySQL 数据
+
+```bash
+curl -X POST http://localhost:8080/api/query \
+  -H "Content-Type: application/json" \
+  -d '{
+    "dataSources": [
+      {
+        "name": "user_stats",
+        "type": "mysql",
+        "url": "jdbc:mysql://localhost:3306/mydb",
+        "username": "root",
+        "password": "password",
+        "database": "mydb",
+        "table": "SELECT u.id, u.name, COUNT(o.id) as order_count FROM users u LEFT JOIN orders o ON u.id = o.user_id GROUP BY u.id, u.name",
+        "useCustomQuery": true
+      }
+    ],
+    "sql": "SELECT * FROM user_stats WHERE order_count > 5",
+    "params": {}
+  }'
+```
+
+#### 请求示例：聚合多个数据源（MySQL + HTTP API）
+
+```bash
+curl -X POST http://localhost:8080/api/query \
+  -H "Content-Type: application/json" \
+  -d '{
+    "dataSources": [
+      {
+        "name": "db_users",
+        "type": "mysql",
+        "url": "jdbc:mysql://localhost:3306/mydb",
+        "username": "root",
+        "password": "password",
+        "database": "mydb",
+        "table": "users"
+      },
+      {
+        "name": "api_orders",
+        "type": "http",
+        "url": "https://api.example.com/orders",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${token}"
+        }
+      }
+    ],
+    "sql": "SELECT u.id, u.name, COUNT(o.id) as order_count FROM db_users u LEFT JOIN api_orders o ON u.id = o.user_id GROUP BY u.id, u.name",
+    "params": {
+      "token": "your-api-token"
+    }
   }'
 ```
 
@@ -189,6 +268,82 @@ feign:
 }
 ```
 
+### MySQL 数据库数据源
+
+#### 基本配置（使用表名）
+
+```json
+{
+  "name": "users",
+  "type": "mysql",
+  "url": "jdbc:mysql://localhost:3306/mydb",
+  "username": "root",
+  "password": "password",
+  "database": "mydb",
+  "table": "users"
+}
+```
+
+#### 使用自定义 SQL 查询
+
+```json
+{
+  "name": "user_stats",
+  "type": "mysql",
+  "url": "jdbc:mysql://localhost:3306/mydb",
+  "username": "root",
+  "password": "password",
+  "database": "mydb",
+  "table": "SELECT u.id, u.name, COUNT(o.id) as order_count FROM users u LEFT JOIN orders o ON u.id = o.user_id GROUP BY u.id, u.name",
+  "useCustomQuery": true
+}
+```
+
+#### 使用参数占位符
+
+```json
+{
+  "name": "users",
+  "type": "mysql",
+  "url": "jdbc:mysql://${host}:3306/${database}",
+  "username": "${dbUser}",
+  "password": "${dbPassword}",
+  "database": "${database}",
+  "table": "users"
+}
+```
+
+#### 配置分区读取（提高大数据量读取性能）
+
+```json
+{
+  "name": "large_table",
+  "type": "mysql",
+  "url": "jdbc:mysql://localhost:3306/mydb",
+  "username": "root",
+  "password": "password",
+  "database": "mydb",
+  "table": "large_table",
+  "numPartitions": 10,
+  "partitionColumn": "id",
+  "lowerBound": "1",
+  "upperBound": "1000000"
+}
+```
+
+**配置说明：**
+
+- `url`: JDBC 连接 URL，支持 `${paramName}` 占位符。如果只提供 `host:port`，系统会自动添加 `jdbc:mysql://` 前缀
+- `username`: 数据库用户名，支持 `${paramName}` 占位符
+- `password`: 数据库密码，支持 `${paramName}` 占位符
+- `database`: 数据库名称（可选，如果 URL 中已包含则不需要）
+- `table`: 表名或自定义 SQL 查询语句
+- `useCustomQuery`: 是否使用自定义 SQL 查询（默认 `false`）。如果为 `true`，`table` 字段将被视为 SQL 查询语句
+- `numPartitions`: 分区数量（可选，默认 10），用于并行读取
+- `partitionColumn`: 分区列名（可选），用于并行读取
+- `lowerBound`: 分区下界（可选），配合 `partitionColumn` 使用
+- `upperBound`: 分区上界（可选），配合 `partitionColumn` 使用
+
 ## 项目结构
 
 ```
@@ -201,12 +356,14 @@ src/main/java/com/datamerge/
 ├── datasource/                # 数据源读取器
 │   ├── HttpDataSourceReader.java
 │   ├── JsonDataSourceReader.java
-│   └── ExcelDataSourceReader.java
+│   ├── ExcelDataSourceReader.java
+│   └── MySQLDataSourceReader.java
 ├── model/                     # 数据模型
 │   ├── DataSourceConfig.java
 │   ├── HttpDataSourceConfig.java
 │   ├── JsonDataSourceConfig.java
 │   ├── ExcelDataSourceConfig.java
+│   ├── MySQLDataSourceConfig.java
 │   ├── QueryRequest.java
 │   └── QueryResponse.java
 ├── service/                   # 核心服务

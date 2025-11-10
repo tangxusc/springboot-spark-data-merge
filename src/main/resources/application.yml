@@ -11,7 +11,7 @@ spark:
   master: local[*]
   driver-memory: 2g
   executor-memory: 2g
-  ui-enabled: false
+  ui-enabled: true
 
 # Feign 配置
 feign:
