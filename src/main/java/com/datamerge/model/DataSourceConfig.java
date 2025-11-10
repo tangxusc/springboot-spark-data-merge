@@ -12,7 +12,8 @@ import lombok.Data;
 @JsonSubTypes({
     @JsonSubTypes.Type(value = HttpDataSourceConfig.class, name = "http"),
     @JsonSubTypes.Type(value = JsonDataSourceConfig.class, name = "json"),
-    @JsonSubTypes.Type(value = ExcelDataSourceConfig.class, name = "excel")
+    @JsonSubTypes.Type(value = ExcelDataSourceConfig.class, name = "excel"),
+    @JsonSubTypes.Type(value = MySQLDataSourceConfig.class, name = "mysql")
 })
 public abstract class DataSourceConfig {
     /**

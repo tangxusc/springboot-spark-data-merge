@@ -4,6 +4,7 @@ import com.datamerge.config.SparkConfig;
 import com.datamerge.datasource.ExcelDataSourceReader;
 import com.datamerge.datasource.HttpDataSourceReader;
 import com.datamerge.datasource.JsonDataSourceReader;
+import com.datamerge.datasource.MySQLDataSourceReader;
 import com.datamerge.model.*;
 import com.datamerge.util.ParameterResolver;
 import org.apache.spark.sql.Dataset;
@@ -35,6 +36,7 @@ public class SparkEngineServiceTest {
     private HttpDataSourceReader mockHttpDataSourceReader;
     private JsonDataSourceReader mockJsonDataSourceReader;
     private ExcelDataSourceReader mockExcelDataSourceReader;
+    private MySQLDataSourceReader mockMysqlDataSourceReader;
     private SparkSession mockSparkSession;
     private Dataset<Row> mockDataset;
     
@@ -46,6 +48,7 @@ public class SparkEngineServiceTest {
         mockHttpDataSourceReader = mock(HttpDataSourceReader.class);
         mockJsonDataSourceReader = mock(JsonDataSourceReader.class);
         mockExcelDataSourceReader = mock(ExcelDataSourceReader.class);
+        mockMysqlDataSourceReader = mock(MySQLDataSourceReader.class);
         mockSparkSession = mock(SparkSession.class);
         mockDataset = mock(Dataset.class);
         
@@ -62,7 +65,8 @@ public class SparkEngineServiceTest {
             mockParameterResolver,
             mockHttpDataSourceReader,
             mockJsonDataSourceReader,
-            mockExcelDataSourceReader
+            mockExcelDataSourceReader,
+            mockMysqlDataSourceReader
         );
         
         // 通过反射注入 Mock 的 SparkSession（避免执行 @PostConstruct）

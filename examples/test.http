@@ -7,7 +7,7 @@ Content-Type: application/json
       {
         "name": "users",
         "type": "http",
-        "url": "https://jsonplaceholder.typicode.com/users/${userId}",
+        "url": "http://117.89.250.102:9205/security/getOneWarn?warnId=2",
         "method": "GET",
         "headers": {
           "Authorization": "Bearer ${token}"
@@ -22,6 +22,52 @@ Content-Type: application/json
       }
     ],
     "sql": "SELECT u.*, c.value FROM users u LEFT JOIN config c ON u.id = c.user_id",
+    "params": {
+      "userId": "1",
+      "token": "your-api-token"
+    }
+  }
+
+### 
+POST http://localhost:8080/api/query
+Content-Type: application/json
+
+{
+    "dataSources": [
+      {
+        "name": "users",
+        "type": "http",
+        "url": "http://117.89.250.102:9205/security/getOneWarn?warnId=2",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${token}"
+        }
+      }
+    ],
+    "sql": "SELECT u.* FROM users as u",
+    "params": {
+      "userId": "1",
+      "token": "your-api-token"
+    }
+  }
+
+### 
+POST http://localhost:8080/api/query
+Content-Type: application/json
+
+{
+    "dataSources": [
+      {
+        "name": "users",
+        "type": "http",
+        "url": "http://117.89.250.102:9205/security/getOneWarn?warnId=2",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${token}"
+        }
+      }
+    ],
+    "sql": "SELECT u.data.buildId FROM users as u",
     "params": {
       "userId": "1",
       "token": "your-api-token"
