@@ -60,16 +60,17 @@ Content-Type: application/json
       {
         "name": "users",
         "type": "http",
-        "url": "http://117.89.250.102:9205/security/getOneWarn?warnId=2",
+        "url": "http://117.89.250.102:9205/security/getOneWarn?warnId=${warnId}",
         "method": "GET",
         "headers": {
           "Authorization": "Bearer ${token}"
         }
       }
     ],
-    "sql": "SELECT u.data.buildId FROM users as u",
+    //查询Data数组中的第一个元素
+    "sql": "SELECT u.data.* FROM users as u",
     "params": {
-      "userId": "1",
+      "warnId": "2",
       "token": "your-api-token"
     }
   }

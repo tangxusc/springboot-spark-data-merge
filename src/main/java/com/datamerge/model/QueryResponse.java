@@ -22,7 +22,7 @@ public class QueryResponse {
     /**
      * 数据列表
      */
-    private List<Map<String, Object>> data;
+    private Object data;
     
     /**
      * 错误信息
@@ -34,7 +34,7 @@ public class QueryResponse {
      */
     private Long executionTime;
     
-    public static QueryResponse success(List<Map<String, Object>> data, long executionTime) {
+    public static QueryResponse success(Object data, long executionTime) {
         return new QueryResponse(true, data, null, executionTime);
     }
     
